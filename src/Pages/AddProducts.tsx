@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setUser } from "@/Redux/userSlice";
 import { RootState } from "@/Redux/Store";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -26,9 +27,8 @@ const getTokenFromLocalStorage = () => {
 
 export default function AddProducts() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [products, setProducts] = useState<Product[]>([]);
-  
-  // Fetch user directly from Redux
   const user = useSelector((state: RootState) => state.user.user);
   const userId = user?._id;
 
@@ -36,8 +36,47 @@ export default function AddProducts() {
   const handleLogout = () => {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
+    dispatch(setUser(null));
     navigate("/login");
   };
+
+  // Fetch User Profile
+  useEffect(() => {
+    const token = getTokenFromLocalStorage();
+
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    axios
+      .post(
+        `${import.meta.env.VITE_API_URL}/api/user/profile`,
+        { token }, // Send the token in the request body
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      )
+      .then((response) => {
+        if (response.data.error) {
+          toast.error("Failed to fetch user profile.", {
+            position: "top-right",
+          });
+        } else {
+          toast.success("User profile fetched successfully!", {
+            position: "top-right",
+          });
+          dispatch(setUser(response.data.user));
+        }
+      })
+      .catch((error) => {
+        toast.error("Error fetching user profile.", {
+          position: "top-right",
+        });
+        console.error("Error fetching user profile:", error);
+      });
+  }, [navigate, dispatch]);
 
   // Fetch Products for the Logged-in User
   const fetchProducts = async () => {
@@ -80,10 +119,8 @@ export default function AddProducts() {
   useEffect(() => {
     if (userId) {
       fetchProducts();
-    } else {
-      navigate("/login");
     }
-  }, [userId, navigate]);
+  }, [userId]);
 
   // Handle Product Addition
   const handleProductAdded = () => {
