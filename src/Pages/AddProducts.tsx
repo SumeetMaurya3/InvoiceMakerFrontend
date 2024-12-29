@@ -130,22 +130,23 @@ export default function AddProducts() {
         });
         return;
       }
-
-      // Request to generate PDF
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/product/generate-products-pdf/${userId}`,
+  
+      // Request to generate PDF via POST request
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/product/generate-products-pdf`,
+        { userId },
         {
           responseType: "arraybuffer", // Set response type to handle binary data
         }
       );
-
+  
       // Convert response to Blob and create download link
       const blob = new Blob([response.data], { type: "application/pdf" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "products-report.pdf"; // Set the file name
       link.click();
-
+  
       toast.success("PDF generated and downloaded successfully!", {
         position: "top-right",
       });
@@ -156,6 +157,7 @@ export default function AddProducts() {
       console.error("Error downloading PDF:", error);
     }
   };
+  
 
   return (
     <div className="flex flex-col h-screen bg-black text-white">
