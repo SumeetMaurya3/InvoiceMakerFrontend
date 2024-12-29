@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/Redux/userSlice";
 import { RootState } from "@/Redux/Store";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify"; // Import Toastify
-import "react-toastify/dist/ReactToastify.css"; // Import Toastify CSS
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Header from "@/Components/Header";
 import { Productform } from "@/Components/ProductForm";
@@ -20,28 +20,66 @@ type Product = {
   totalPrice: number;
 };
 
+// Function to get access token from cookies
+const getTokenFromCookies = () => {
+  const accessToken = document.cookie.replace(
+    /(?:(?:^|.*;\s*)access_token\s*=\s*([^;]*).*$)|^.*$/,
+    "$1"
+  );
+  return accessToken;
+};
+
 export default function AddProducts() {
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const [products, setProducts] = useState<Product[]>([]);
-
   const user = useSelector((state: RootState) => state.user.user);
   const userId = user?._id;
 
-  // ✅ Handle Logout
+  // Handle Logout
   const handleLogout = () => {
     document.cookie = "access_token=; path=/; max-age=0";
     document.cookie = "refresh_token=; path=/; max-age=0";
-
     dispatch(setUser(null));
     window.location.href = "/login";
   };
 
-  // ✅ Fetch User Profile
-  
+  // Fetch User Profile
+  useEffect(() => {
+    const token = getTokenFromCookies();
 
-  // ✅ Fetch Products for the Logged-in User
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
+    axios
+      .post(
+        `${import.meta.env.VITE_API_URL}/api/user/profile`,
+        { token }, // Send the token in the request body
+        { withCredentials: true }
+      )
+      .then((response) => {
+        if (response.data.error) {
+          toast.error("Failed to fetch user profile.", {
+            position: "top-right",
+          });
+        } else {
+          toast.success("User profile fetched successfully!", {
+            position: "top-right",
+          });
+          dispatch(setUser(response.data.user));
+        }
+      })
+      .catch((error) => {
+        toast.error("Error fetching user profile.", {
+          position: "top-right",
+        });
+        console.error("Error fetching user profile:", error);
+      });
+  }, [navigate, dispatch]);
+
+  // Fetch Products for the Logged-in User
   const fetchProducts = async () => {
     if (!userId) return;
 
@@ -69,7 +107,7 @@ export default function AddProducts() {
     }
   }, [userId]);
 
-  // ✅ Handle Product Addition
+  // Handle Product Addition
   const handleProductAdded = () => {
     toast.success("Product added successfully!", {
       position: "top-right",
@@ -77,7 +115,7 @@ export default function AddProducts() {
     fetchProducts(); // Re-fetch products when a new one is added
   };
 
-  // ✅ Handle Download
+  // Handle Download
   const handleDownload = async () => {
     try {
       if (!userId) {
