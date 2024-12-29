@@ -16,20 +16,19 @@ const getTokenFromCookies = () => {
   
   // Function to validate access token
   export const validateAccessToken = async () => {
-    const { accessToken } = getTokenFromCookies();
-    console.log(accessToken);
+    const { accessToken } = getTokenFromCookies(); // Get access token from cookies
   
     if (!accessToken) {
       return false; // No access token, consider it invalid
     }
   
     try {
+      // Send token in the Authorization header instead of cookies
       const response = await axios.post('http://localhost:8000/api/user/validate', {}, {
         headers: {
-          // No need to pass the access token in the body, cookies will be sent automatically
-          Authorization: `Bearer ${accessToken}` // Optionally, send in Authorization header if needed
+          Authorization: `Bearer ${accessToken}`, // Pass the access token in the header
         },
-        withCredentials: true // Ensures cookies are sent with the request
+        withCredentials: true, // Ensure cookies are sent automatically if needed
       });
   
       return response.status === 200; // If validation succeeds, return true
@@ -38,6 +37,7 @@ const getTokenFromCookies = () => {
       return false; // If an error occurs, the token is invalid
     }
   };
+  
   
 
 // Function to refresh the token using the refresh token
