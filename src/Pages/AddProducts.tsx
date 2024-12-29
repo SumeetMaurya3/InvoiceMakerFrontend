@@ -20,13 +20,9 @@ type Product = {
   totalPrice: number;
 };
 
-// Function to get access token from cookies
-const getTokenFromCookies = () => {
-  const accessToken = document.cookie.replace(
-    /(?:(?:^|.*;\s*)access_token\s*=\s*([^;]*).*$)|^.*$/,
-    "$1"
-  );
-  return accessToken;
+// Function to get access token from localStorage
+const getTokenFromLocalStorage = () => {
+  return localStorage.getItem('access_token');
 };
 
 export default function AddProducts() {
@@ -38,15 +34,15 @@ export default function AddProducts() {
 
   // Handle Logout
   const handleLogout = () => {
-    document.cookie = "access_token=; path=/; max-age=0";
-    document.cookie = "refresh_token=; path=/; max-age=0";
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     dispatch(setUser(null));
     navigate("/login");
   };
 
   // Fetch User Profile
   useEffect(() => {
-    const token = getTokenFromCookies();
+    const token = getTokenFromLocalStorage();
 
     if (!token) {
       navigate("/login");
@@ -57,7 +53,10 @@ export default function AddProducts() {
       .post(
         `${import.meta.env.VITE_API_URL}/api/user/profile`,
         { token }, // Send the token in the request body
-        { withCredentials: true }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
       )
       .then((response) => {
         if (response.data.error) {
@@ -81,31 +80,41 @@ export default function AddProducts() {
 
   // Fetch Products for the Logged-in User
   const fetchProducts = async () => {
-    console.log(userId)
     if (!userId) return;
-    try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/api/product/user/products`,  // Changed to POST request
-            { user_id: userId },  // Send user_id in the request body
-            { withCredentials: true } // Ensure cookies are sent for authentication
-        );
-        
-        console.log("response", response)
-        const fetchedProducts = response.data.products.map((product: any) => ({
-            name: product.name,
-            price: product.price,
-            quantity: product.quantity,
-            totalPrice: product.price * product.quantity,
-        }));
-        setProducts(fetchedProducts);
-    } catch (error) {
-        console.log(error)
-        toast.error("Error fetching products.", {
-            position: "top-right",
-        });
-    }
-};
 
+    const token = getTokenFromLocalStorage();
+    if (!token) {
+      toast.error("Access token missing. Please login again.", {
+        position: "top-right",
+      });
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/product/user/products`,
+        { user_id: userId },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+
+      const fetchedProducts = response.data.products.map((product: any) => ({
+        name: product.name,
+        price: product.price,
+        quantity: product.quantity,
+        totalPrice: product.price * product.quantity,
+      }));
+      setProducts(fetchedProducts);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error fetching products.", {
+        position: "top-right",
+      });
+    }
+  };
 
   useEffect(() => {
     if (userId) {
@@ -130,23 +139,31 @@ export default function AddProducts() {
         });
         return;
       }
-  
-      // Request to generate PDF via POST request
+
+      const token = getTokenFromLocalStorage();
+      if (!token) {
+        toast.error("Access token missing. Please login again.", {
+          position: "top-right",
+        });
+        navigate("/login");
+        return;
+      }
+
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/product/generate-products-pdf`,
         { userId },
         {
-          responseType: "arraybuffer", // Set response type to handle binary data
+          headers: { Authorization: `Bearer ${token}` },
+          responseType: "arraybuffer",
         }
       );
-  
-      // Convert response to Blob and create download link
+
       const blob = new Blob([response.data], { type: "application/pdf" });
       const link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
-      link.download = "products-report.pdf"; // Set the file name
+      link.download = "products-report.pdf";
       link.click();
-  
+
       toast.success("PDF generated and downloaded successfully!", {
         position: "top-right",
       });
@@ -157,7 +174,6 @@ export default function AddProducts() {
       console.error("Error downloading PDF:", error);
     }
   };
-  
 
   return (
     <div className="flex flex-col h-screen bg-black text-white">
