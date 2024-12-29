@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
+
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/Redux/userSlice";
 import { RootState } from "@/Redux/Store";
@@ -22,7 +21,7 @@ type Product = {
 };
 
 export default function AddProducts() {
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -40,37 +39,7 @@ export default function AddProducts() {
   };
 
   // ✅ Fetch User Profile
-  useEffect(() => {
-    const token = Cookies.get("access_token");
-
-    if (!token) {
-      navigate("/login");
-      return;
-    }
-
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/api/user/profile`, {
-        withCredentials: true,
-      })
-      .then((response) => {
-        if (response.data.error) {
-          toast.error("Failed to fetch user profile.", {
-            position: "top-right",
-          });
-        } else {
-          toast.success("User profile fetched successfully!", {
-            position: "top-right",
-          });
-          dispatch(setUser(response.data.user));
-        }
-      })
-      .catch((error) => {
-        toast.error("Error fetching user profile.", {
-          position: "top-right",
-        });
-        console.error("Error fetching user profile:", error);
-      });
-  }, [navigate, dispatch]);
+  
 
   // ✅ Fetch Products for the Logged-in User
   const fetchProducts = async () => {
