@@ -85,8 +85,10 @@ export default function AddProducts() {
     if (!userId) return;
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/product/user/${userId}`
-      );      
+        `${import.meta.env.VITE_API_URL}/api/product/user/6770c20da6705ec335324cac`,
+        { withCredentials: true } // This is essential if you're using cookies for authentication
+      );
+      
       console.log("response", response)
       const fetchedProducts = response.data.products.map((product: any) => ({
         name: product.name,
