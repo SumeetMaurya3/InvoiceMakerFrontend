@@ -1,14 +1,16 @@
 import Header from "@/Components/Header";
 import { Signupform } from "@/Components/Signupform";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+  const navigate = useNavigate();
 
   const handleClick = () => {
     document.cookie = 'access_token=; path=/; max-age=0';
   document.cookie = 'refresh_token=; path=/; max-age=0';
   
   // Redirect to the login page after logout
-  window.location.href = '/login';
+  navigate("/login");
   };
   return (
     <div className="flex flex-col h-screen bg-black text-white">

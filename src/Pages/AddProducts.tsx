@@ -41,7 +41,7 @@ export default function AddProducts() {
     document.cookie = "access_token=; path=/; max-age=0";
     document.cookie = "refresh_token=; path=/; max-age=0";
     dispatch(setUser(null));
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   // Fetch User Profile

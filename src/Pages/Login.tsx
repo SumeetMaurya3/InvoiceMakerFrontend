@@ -5,20 +5,22 @@ import {
   CarouselItem,
 } from "../Components/ui/carousel";
 import Header from "@/Components/Header";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
+  const navigate = useNavigate();
 
   
   const handleClick = () => {  
-  window.location.href = '/signup';
+    navigate("/signup");
   };
   return (
     <div className="flex flex-col h-screen bg-black text-white">
       {/* Header */}
-      <Header buttonText="Connecting People With Technology" onButtonClick={handleClick} />
+      <Header buttonText="Register" onButtonClick={handleClick} />
 
       <main className="flex flex-1 flex-col lg:flex-row items-start bg-black">
-        <div className="lg:w-1/4 md:w-1/2 sm:w-full bg-black mx-auto">
+        <div className="lg:w-1/4 md:w-1/2 sm:w-full bg-black mx-auto py-14">
           <Carousel>
             <CarouselContent>
               <CarouselItem>
@@ -44,7 +46,7 @@ export default function Login() {
         </div>
 
 
-        <div className="flex flex-col justify-start  lg:w-1/2 bg-black px-10 py-8">
+        <div className="flex flex-col justify-start  lg:w-1/2 bg-black px-10 py-2">
         <div className="lg:w-4/5">
           <img src="./Frame-39624.svg" alt="Logo" className="lg:w-1/3 my-10" />
           <h1 className="text-3xl font-bold mb-4">Let the Journey Begin!</h1>
