@@ -84,26 +84,28 @@ export default function AddProducts() {
     console.log(userId)
     if (!userId) return;
     try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/product/user/6770c20da6705ec335324cac`,
-        { withCredentials: true } // This is essential if you're using cookies for authentication
-      );
-      
-      console.log("response", response)
-      const fetchedProducts = response.data.products.map((product: any) => ({
-        name: product.name,
-        price: product.price,
-        quantity: product.quantity,
-        totalPrice: product.price * product.quantity,
-      }));
-      setProducts(fetchedProducts);
+        const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/api/product/user/products`,  // Changed to POST request
+            { user_id: userId },  // Send user_id in the request body
+            { withCredentials: true } // Ensure cookies are sent for authentication
+        );
+        
+        console.log("response", response)
+        const fetchedProducts = response.data.products.map((product: any) => ({
+            name: product.name,
+            price: product.price,
+            quantity: product.quantity,
+            totalPrice: product.price * product.quantity,
+        }));
+        setProducts(fetchedProducts);
     } catch (error) {
-      console.log(error)
-      toast.error("Error fetching products.", {
-        position: "top-right",
-      });
+        console.log(error)
+        toast.error("Error fetching products.", {
+            position: "top-right",
+        });
     }
-  };
+};
+
 
   useEffect(() => {
     if (userId) {
