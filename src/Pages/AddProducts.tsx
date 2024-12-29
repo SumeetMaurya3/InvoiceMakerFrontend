@@ -83,11 +83,10 @@ export default function AddProducts() {
   const fetchProducts = async () => {
     console.log(userId)
     if (!userId) return;
-
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/product/user/6770c20da6705ec335324cac`
-      );
+        `${import.meta.env.VITE_API_URL}/api/product/user/${userId}`
+      );      
       console.log("response", response)
       const fetchedProducts = response.data.products.map((product: any) => ({
         name: product.name,
