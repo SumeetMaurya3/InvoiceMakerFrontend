@@ -45,7 +45,6 @@ export default function AddProducts() {
     const token = getTokenFromLocalStorage();
 
     if (!token) {
-      navigate("/login");
       return;
     }
 
@@ -175,20 +174,33 @@ export default function AddProducts() {
     }
   };
 
+  const token = getTokenFromLocalStorage();
+
   return (
     <div className="flex flex-col h-screen bg-black text-white">
-      <Header buttonText="Logout" onButtonClick={handleLogout} />
+      <Header
+        buttonText={token ? "Logout" : "Login"}
+        onButtonClick={token ? handleLogout : () => navigate("/login")}
+      />
       <div className="p-10 bg-black">
-        <Productform onProductAdded={handleProductAdded} />
-        <DisplayTable dat={products} />
-        <div className="flex justify-center w-full my-10">
-          <Button
-            onClick={handleDownload}
-            className="bg-[#44403c] text-[#a3e635] px-6 py-2 rounded-md"
-          >
-            Download Pdf Invoice
-          </Button>
-        </div>
+        {token ? (
+          <>
+            <Productform onProductAdded={handleProductAdded} />
+            <DisplayTable dat={products} />
+            <div className="flex justify-center w-full my-10">
+              <Button
+                onClick={handleDownload}
+                className="bg-[#44403c] text-[#a3e635] px-6 py-2 rounded-md"
+              >
+                Download Pdf Invoice
+              </Button>
+            </div>
+          </>
+        ) : (
+          <div className="text-center mt-10">
+            <p>Please login to create the invoice.</p>
+          </div>
+        )}
       </div>
 
       {/* Toast Container for displaying notifications */}
