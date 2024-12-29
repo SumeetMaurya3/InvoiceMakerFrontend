@@ -2,7 +2,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import axios from "axios";
-import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Button } from "./ui/button";
@@ -37,7 +36,11 @@ export function Loginform() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/login`, values, { withCredentials: true });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/user/login`,
+        values,
+        { withCredentials: true }
+      );
 
       if (response.data.error === false) {
         // Display success toast
@@ -50,14 +53,14 @@ export function Loginform() {
           draggable: true,
         });
 
-        // Set cookies
-        Cookies.set("access_token", response.data.access_token, { expires: 1 });
-        Cookies.set("refresh_token", response.data.refresh_token, { expires: 7 });
+        // Store tokens in localStorage
+        localStorage.setItem("access_token", response.data.access_token);
+        localStorage.setItem("refresh_token", response.data.refresh_token);
 
         // Redirect to dashboard
         setTimeout(() => {
           window.location.href = "/";
-        }, 3000); // Redirect after 3 seconds to allow toast display
+        }, 3000);
       } else {
         // Display error toast
         toast.error(response.data.message || "Login failed!", {
@@ -71,14 +74,17 @@ export function Loginform() {
       }
     } catch (error: any) {
       // Display error toast
-      toast.error(error.response?.data?.message || "An error occurred during login.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(
+        error.response?.data?.message || "An error occurred during login.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
     }
   };
 
@@ -99,7 +105,9 @@ export function Loginform() {
                     className="py-6 bg-[#27272a] border-[#404040]"
                   />
                 </FormControl>
-                <FormDescription>This email will be displayed with your inquiry.</FormDescription>
+                <FormDescription>
+                  This email will be displayed with your inquiry.
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
