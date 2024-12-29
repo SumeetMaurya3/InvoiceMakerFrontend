@@ -15,6 +15,8 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/Redux/userSlice"; // Import Redux action
 
 const formSchema = z.object({
   email: z.string().email({
@@ -25,7 +27,8 @@ const formSchema = z.object({
   }),
 });
 
-export function Loginform() {
+export function LoginForm() {
+  const dispatch = useDispatch(); // Initialize dispatch for Redux
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,6 +46,13 @@ export function Loginform() {
       );
 
       if (response.data.error === false) {
+        // Store tokens in localStorage
+        localStorage.setItem("access_token", response.data.access_token);
+        localStorage.setItem("refresh_token", response.data.refresh_token);
+
+        // Store user details in Redux
+        dispatch(setUser(response.data.user));
+
         // Display success toast
         toast.success("Login successful!", {
           position: "top-right",
@@ -53,16 +63,12 @@ export function Loginform() {
           draggable: true,
         });
 
-        // Store tokens in localStorage
-        localStorage.setItem("access_token", response.data.access_token);
-        localStorage.setItem("refresh_token", response.data.refresh_token);
-
-        // Redirect to dashboard
+        // Redirect to the main page (Dashboard)
         setTimeout(() => {
           window.location.href = "/";
         }, 3000);
       } else {
-        // Display error toast
+        // Display error toast if login fails
         toast.error(response.data.message || "Login failed!", {
           position: "top-right",
           autoClose: 3000,
@@ -73,7 +79,6 @@ export function Loginform() {
         });
       }
     } catch (error: any) {
-      // Display error toast
       toast.error(
         error.response?.data?.message || "An error occurred during login.",
         {
