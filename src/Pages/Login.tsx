@@ -20,30 +20,30 @@ export default function Login() {
       <Header buttonText="Register" onButtonClick={handleClick} />
 
       <main className="flex flex-1 flex-col lg:flex-row items-start bg-black">
-        <div className="lg:w-1/4 md:w-1/2 sm:w-full bg-black mx-auto py-14">
-          <Carousel>
-            <CarouselContent>
-              <CarouselItem>
-                <div>
-                  <img
-                    src="/slider1.png"
-                    alt="Connecting People With Technology"
-                    className="object-cover w-full rounded-l-[30px]" 
-                  />
-                </div>
-              </CarouselItem>
-              <CarouselItem>
-                <div>
-                  <img
-                    src="/slider2.png"
-                    alt="Connecting People With Technology"
-                    className="object-cover w-full rounded-l-[30px]"
-                  />
-                </div>
-              </CarouselItem>
-            </CarouselContent>
-          </Carousel>
+      <div className="lg:w-1/4 md:w-1/2 sm:w-full bg-black mx-auto py-14 hidden lg:block">
+  <Carousel>
+    <CarouselContent>
+      <CarouselItem>
+        <div>
+          <img
+            src="/slider1.png"
+            alt="Connecting People With Technology"
+            className="object-cover w-full rounded-l-[30px]"
+          />
         </div>
+      </CarouselItem>
+      <CarouselItem>
+        <div>
+          <img
+            src="/slider2.png"
+            alt="Connecting People With Technology"
+            className="object-cover w-full rounded-l-[30px]"
+          />
+        </div>
+      </CarouselItem>
+    </CarouselContent>
+  </Carousel>
+</div>
 
 
         <div className="flex flex-col justify-start  lg:w-1/2 bg-black px-10 py-2">

@@ -30,13 +30,14 @@ export default function Signup() {
           <div className="flex flex-col lg:h-full lg:items-center">
             <div className="lg:h-0.5/5 h-16"></div>
 
-            <div className="lg:h-4/5 lg:w-full">
-              <img
-                src="/levi1.png"
-                alt="Connecting People With Technology"
-                className="object-cover w-full h-full rounded-l-[30px]" 
-              />
-            </div>
+            <div className="lg:h-4/5 lg:w-full hidden lg:block">
+  <img
+    src="/levi1.png"
+    alt="Connecting People With Technology"
+    className="object-cover w-full h-full rounded-l-[30px]"
+  />
+</div>
+
 
             <div className="lg:h-0.5/5 h-16"></div>
           </div>
