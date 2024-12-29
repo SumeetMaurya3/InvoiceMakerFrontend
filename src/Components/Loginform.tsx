@@ -27,7 +27,7 @@ const formSchema = z.object({
   }),
 });
 
-export function LoginForm() {
+export function Loginform() {
   const dispatch = useDispatch(); // Initialize dispatch for Redux
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
