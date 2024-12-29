@@ -10,25 +10,27 @@ const getTokensFromLocalStorage = () => {
 // Function to validate access token
 export const validateAccessToken = async () => {
     const { accessToken } = getTokensFromLocalStorage(); // Extract the token from localStorage.
-  
+
     if (!accessToken) {
         return false; // No access token, consider it invalid.
     }
-  
+
     try {
-        const response = await axios.post('http://localhost:8000/api/user/validate', 
+        const response = await axios.post('http://localhost:8000/api/user/validate',
             { token: accessToken }, // Send token in the request body
-            {
-                withCredentials: true, // Ensure cookies are sent with the request
-            }
+            { withCredentials: true } // Ensure cookies are sent with the request
         );
+
         console.log(response);
-        return response.status === 200; // If validation succeeds, return true.
+
+        // Ensure response structure is checked properly
+        return response.status === 200 || response.data?.error === false;
     } catch (error) {
         console.error("Error validating access token:", error);
         return false; // If an error occurs, the token is invalid.
     }
 };
+
 
 // Function to refresh the token using the refresh token
 export const refreshAccessToken = async () => {
