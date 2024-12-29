@@ -1,6 +1,4 @@
 import axios from 'axios';
-import { useDispatch } from "react-redux";
-import { setUser } from "@/Redux/userSlice";
 
 // Function to get tokens from cookies (or localStorage)
 const getTokenFromCookies = () => {
@@ -18,7 +16,6 @@ const getTokenFromCookies = () => {
   
   // Function to validate access token
   export const validateAccessToken = async () => {
-    const dispatch = useDispatch();
     const { accessToken } = getTokenFromCookies(); // Extract the token from cookies.
   
     if (!accessToken) {
@@ -33,7 +30,6 @@ const getTokenFromCookies = () => {
         }
       );
       console.log(response);
-      dispatch(setUser(response.data.user));
       return response.status === 200; // If validation succeeds, return true.
     } catch (error) {
       console.error("Error validating access token:", error);
