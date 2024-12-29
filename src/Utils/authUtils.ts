@@ -16,27 +16,27 @@ const getTokenFromCookies = () => {
   
   // Function to validate access token
   export const validateAccessToken = async () => {
-    const { accessToken } = getTokenFromCookies(); // Get access token from cookies
+    const { accessToken } = getTokenFromCookies(); // Extract the token from cookies.
   
     if (!accessToken) {
-      return false; // No access token, consider it invalid
+      return false; // No access token, consider it invalid.
     }
   
     try {
-      // Send token in the Authorization header instead of cookies
-      const response = await axios.post('http://localhost:8000/api/user/validate', {}, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`, // Pass the access token in the header
-        },
-        withCredentials: true, // Ensure cookies are sent automatically if needed
-      });
+      const response = await axios.post('http://localhost:8000/api/user/validate', 
+        { token: accessToken }, // Send token in the request body
+        {
+          withCredentials: true, // Ensure cookies are sent with the request
+        }
+      );
   
-      return response.status === 200; // If validation succeeds, return true
+      return response.status === 200; // If validation succeeds, return true.
     } catch (error) {
       console.error("Error validating access token:", error);
-      return false; // If an error occurs, the token is invalid
+      return false; // If an error occurs, the token is invalid.
     }
   };
+  
   
   
 
