@@ -23,9 +23,10 @@ export const validateAccessToken = async () => {
 
         console.log(response);
         console.log(response.status)
+        console.log(response.status === 200)
 
         // Ensure response structure is checked properly
-        return response.status == 200 || response.data?.error === false;
+        return response.status === 200 && response.data?.error === false;
     } catch (error) {
         console.error("Error validating access token:", error);
         return false; // If an error occurs, the token is invalid.
