@@ -81,6 +81,7 @@ export default function AddProducts() {
 
   // Fetch Products for the Logged-in User
   const fetchProducts = async () => {
+    console.log(userId)
     if (!userId) return;
 
     try {
