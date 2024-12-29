@@ -1,0 +1,136 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import axios from "axios";
+import Cookies from "js-cookie";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Button } from "./ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { Input } from "./ui/input";
+
+const formSchema = z.object({
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
+  password: z.string().min(6, {
+    message: "Password must be at least 6 characters.",
+  }),
+});
+
+export function Loginform() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/login`, values);
+
+      if (response.data.error === false) {
+        // Display success toast
+        toast.success("Login successful!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+
+        // Set cookies
+        Cookies.set("access_token", response.data.access_token, { expires: 1 });
+        Cookies.set("refresh_token", response.data.refresh_token, { expires: 7 });
+
+        // Redirect to dashboard
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 3000); // Redirect after 3 seconds to allow toast display
+      } else {
+        // Display error toast
+        toast.error(response.data.message || "Login failed!", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    } catch (error: any) {
+      // Display error toast
+      toast.error(error.response?.data?.message || "An error occurred during login.", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+
+  return (
+    <>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Enter your email ID"
+                    {...field}
+                    className="py-6 bg-[#27272a] border-[#404040]"
+                  />
+                </FormControl>
+                <FormDescription>This email will be displayed with your inquiry.</FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Enter the password"
+                    {...field}
+                    className="py-6 bg-[#27272a] border-[#404040]"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="bg-[#44403c] text-[#a3e635]">
+            Login now
+          </Button>
+        </form>
+      </Form>
+
+      <ToastContainer />
+    </>
+  );
+}
