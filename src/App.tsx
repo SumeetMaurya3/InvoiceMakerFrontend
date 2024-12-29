@@ -13,8 +13,10 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     const checkTokenValidity = async () => {
       const isValid = await validateAccessToken();
       
-      if (isValid) {
-        setLoading(false); // If token is valid, continue loading the page
+      if (isValid===200) {
+        setLoading(false); 
+        console.log(isValid)
+        console.log("helo")
         return;
       }
 
