@@ -37,7 +37,7 @@ export function Loginform() {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/login`, values);
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/user/login`, values, { withCredentials: true });
 
       if (response.data.error === false) {
         // Display success toast
