@@ -88,6 +88,7 @@ export default function AddProducts() {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/api/product/user/${userId}`
       );
+      console.log(response)
       const fetchedProducts = response.data.products.map((product: any) => ({
         name: product.name,
         price: product.price,
